@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Electron: Main",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/.bin/electron",
+        "args": ["${workspaceFolder}/main.js"],
+        "stopOnEntry": false,
+        "cwd": "${workspaceFolder}",
+        "preLaunchTask": "npm: start",
+        "runtimeExecutable": null,
+        "runtimeArgs": ["--nolazy"],
+        "env": {},
+        "console": "integratedTerminal",
+        "outputCapture": "std",
+        "windows": {
+          "program": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+        }
+      }
+    ]
+  }
+  
