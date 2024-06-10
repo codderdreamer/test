@@ -94,6 +94,29 @@ class WebSocketClient {
                     addDivContent("4g imei adresi alındı: " + data, true)
                 }
             }
+            else if(command == "WifiIpResult"){
+                if(data == null || data == ""){
+                    addDivContent("Wifiye bağlanmadı!", false)
+                }
+                else{
+                    addDivContent("Wifiye bağlandı ip adresi : " + data, true)
+                    const message = {
+                        "Command" : "setLedRed",
+                        "Data" : {}
+                    }
+                    wsClient.sendMessage(message)
+                    const send = document.createElement('button');
+                    send.classList.add('redButton')
+                    send.id = "send"
+                    send.innerText = "Kırmızı Led yanıyor mu?"
+
+                    send.addEventListener('click', () => {
+                        acceptRedLed()
+                        setLedBlue()
+                    });
+                    document.getElementById('content').appendChild(send)
+                }
+            }
         };
 
         this.websocket.onclose = (event) => {
@@ -139,7 +162,6 @@ function addHeader(){
     document.getElementById('content').appendChild(headerDiv)
 }
 
-
 function addModel(){
     const model = document.createElement('div');
     model.classList.add('model')
@@ -168,6 +190,20 @@ function addChargePointId(){
     document.getElementById('content').appendChild(chargePointId)
 }
 
+function addSerialNumber(){
+    const serialNumber = document.createElement('div');
+    serialNumber.classList.add('model')
+    const serialNumberText = document.createElement('div');
+    serialNumberText.classList.add('modelText')
+    serialNumberText.innerText = "Lütfen seri numarası giriniz :"
+    serialNumber.appendChild(serialNumberText);
+    const serialNumberInput = document.createElement('input');
+    serialNumberInput.classList.add("modelInput")
+    serialNumberInput.id = "serialNumberInput"
+    serialNumber.appendChild(serialNumberInput)
+    document.getElementById('content').appendChild(serialNumber)
+}
+
 function addBluetoothControl(){
     const div = document.createElement('div');
     div.classList.add('divContent')
@@ -184,12 +220,13 @@ function addBluetoothControl(){
     
     send.addEventListener('click', () => {
         const message = {
-            "Command" : "RelayOn",
+            "Command" : "WifiControl",
             "Data" : {}
         }
         wsClient.sendMessage(message)
         send.remove()
     });
+
     document.getElementById('content').appendChild(send)
     
     
@@ -205,8 +242,9 @@ function send(){
     send.addEventListener('click', () => {
         const modelInput = document.getElementById('modelInput')
         const chargePointIdInput = document.getElementById('chargePointIdInput')
+        const serialNumberInput = document.getElementById('serialNumberInput')
         console.log(modelInput.value)
-        if (modelInput.value == "" || chargePointIdInput.value == ""){
+        if (modelInput.value == "" || chargePointIdInput.value == "" || serialNumberInput.value == ""){
             ipcRenderer.send('show-alert', 'Lütfen boş bırakmayınız!');
         }
         else{
@@ -214,7 +252,8 @@ function send(){
                 "Command" : "Barkod",
                 "Data" : {
                     "model" : modelInput.value,
-                    "chargePointId" : chargePointIdInput.value
+                    "chargePointId" : chargePointIdInput.value,
+                    "serialNumber" : serialNumberInput.value
                 }
     
             }
@@ -251,9 +290,71 @@ function addDivContent(content,value){
     document.getElementById('content').appendChild(div)
 }
 
+function acceptRedLed(){
+    document.getElementById("send").remove()
+    addDivContent("Kırmızı led yandı.", true)
+}
+
+function setLedBlue(){
+    const message = {
+        "Command" : "setLedBlue",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
+    const send = document.createElement('button');
+    send.classList.add('blueButton')
+    send.id = "send"
+    send.innerText = "Mavi Led yanıyor mu?"
+    send.addEventListener('click', () => {
+        acceptBlueLed()
+        setLedGreen()
+    });
+    document.getElementById('content').appendChild(send)
+}
+
+function acceptBlueLed(){
+    document.getElementById("send").remove()
+    addDivContent("Mavi led yandı.", true)
+}
+
+function setLedGreen(){
+    const message = {
+        "Command" : "setLedGreen",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
+    const send = document.createElement('button');
+    send.classList.add('sendButton')
+    send.id = "send"
+    send.innerText = "Yeşil Led yanıyor mu?"
+    send.addEventListener('click', () => {
+        acceptGreenLed()
+    });
+    document.getElementById('content').appendChild(send)
+}
+
+function acceptGreenLed(){
+    document.getElementById("send").remove()
+    addDivContent("Yeşil led yandı.", true)
+    master_card_read()
+}
+
+function master_card_read(){
+    const div = document.createElement('div');
+    div.classList.add('divContent')
+    div.innerText = "Lütfen MASTER kartı cihaza okutunuz!"
+    document.getElementById('content').appendChild(div)
+    const message = {
+        "Command" : "saveMasterCard",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
+}
+
 const wsClient = new WebSocketClient('ws://192.168.1.201:9000');
 
 addHeader()
 addModel()
 addChargePointId()
+addSerialNumber()
 send()
