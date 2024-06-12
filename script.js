@@ -117,6 +117,17 @@ class WebSocketClient {
                     document.getElementById('content').appendChild(send)
                 }
             }
+            else if(command == "MasterCard"){
+                addDivContent("Master kart cihaza kayıt edildi: " + data, true)
+                addSaveSlaveCard_1()
+            }
+            else if(command == "SlaveCard1"){
+                addDivContent("Slave kart cihaza kayıt edildi: " + data, true)
+                addSaveSlaveCard_2()
+            }
+            else if(command == "SlaveCard2"){
+                addDivContent("Slave kart cihaza kayıt edildi: " + data, true)
+            }
         };
 
         this.websocket.onclose = (event) => {
@@ -228,9 +239,30 @@ function addBluetoothControl(){
     });
 
     document.getElementById('content').appendChild(send)
-    
-    
-    
+}
+
+function addSaveSlaveCard_1(){
+    const div = document.createElement('div');
+    div.classList.add('divContent')
+    div.innerText = "1. Slave kartı okutunuz."
+    document.getElementById('content').appendChild(div)
+    const message = {
+        "Command" : "SaveSlaveCard1",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
+}
+
+function addSaveSlaveCard_2(){
+    const div = document.createElement('div');
+    div.classList.add('divContent')
+    div.innerText = "2. Slave kartı okutunuz."
+    document.getElementById('content').appendChild(div)
+    const message = {
+        "Command" : "SaveSlaveCard2",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
 }
 
 function send(){
@@ -351,7 +383,7 @@ function master_card_read(){
     wsClient.sendMessage(message)
 }
 
-const wsClient = new WebSocketClient('ws://192.168.1.201:9000');
+const wsClient = new WebSocketClient('ws://100.95.162.23:80');
 
 addHeader()
 addModel()
