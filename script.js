@@ -75,13 +75,16 @@ class WebSocketClient {
                     addDivContent("Eth mac adresi alındı: " + data, true)
                     ETHMAC = data
                     const message = {
-                        "Command" : "Reset",
+                        "Command" : "BluetoothSet",
                         "Data" : {}
                     }
                     wsClient.sendMessage(message)
-                    addDivContent("Sistem yeniden başlatılıyor. Bluetooth adresi charge point id ile kayıt olacak", true)
                     addBluetoothControl()
                 }
+            }
+            else if(command=="Bluetooth"){
+                bluetooth(data)
+
             }
             else if(command == "4gImeiResult"){
                 if(data==""){
@@ -117,16 +120,25 @@ class WebSocketClient {
                     document.getElementById('content').appendChild(send)
                 }
             }
-            else if(command == "MasterCard"){
-                addDivContent("Master kart cihaza kayıt edildi: " + data, true)
-                addSaveSlaveCard_1()
-            }
             else if(command == "SlaveCard1"){
                 addDivContent("Slave kart cihaza kayıt edildi: " + data, true)
                 addSaveSlaveCard_2()
             }
             else if(command == "SlaveCard2"){
                 addDivContent("Slave kart cihaza kayıt edildi: " + data, true)
+                master_card_read()
+            }
+            else if(command == "MasterCard"){
+                addDivContent("Master kart cihaza kayıt edildi: " + data, true)
+                addPlugCable()
+            }
+            else if(command == "MidMeter"){
+                if(data == true){
+                    addDivContent("Mid Meter olan model. Bağlantısı bekleniyor..." + data, true)
+                }
+                else if(data == false){
+                    addDivContent("Mid Meter olmayan model." + data, true)
+                }
             }
         };
 
@@ -218,27 +230,50 @@ function addSerialNumber(){
 function addBluetoothControl(){
     const div = document.createElement('div');
     div.classList.add('divContent')
-    div.innerText = "Cihaz bağlanana kadar bekleyiniz..."
+    div.innerText = "Bluetooth adı değiştiriliyor..."
     document.getElementById('content').appendChild(div)
-    const div1 = document.createElement('div');
-    div1.classList.add('divContent')
-    div1.innerText = "Telefonda cihazın bluetooth adı gözüküyor mu? Eski ismi ile gözükür. Bağlandıktan sonra yeni ismi gözükür."
-    document.getElementById('content').appendChild(div1)
-    const send = document.createElement('button');
-    send.classList.add('sendButton')
-    send.id = "send"
-    send.innerText = "Onayla"
-    
-    send.addEventListener('click', () => {
-        const message = {
-            "Command" : "WifiControl",
-            "Data" : {}
-        }
-        wsClient.sendMessage(message)
-        send.remove()
-    });
+}
 
-    document.getElementById('content').appendChild(send)
+function addPlugCable(){
+    const div = document.createElement('div');
+    div.classList.add('divContent')
+    div.innerText = "Max 6 Amper ile şarj başlatılacak, Lütfen kabloyu takınız."
+    document.getElementById('content').appendChild(div)
+    const message = {
+        "Command" : "MaxCurrent6",
+        "Data" : {}
+    }
+    wsClient.sendMessage(message)
+}
+
+function bluetooth(data){
+    if(data["error"] == "None" || data["error"] == "True"){
+        addDivContent("Bluetoothta sorun var!", false)
+    }
+    else {
+        if(data["name"] == CPID){
+            addDivContent("Bluetooth adı başarılı şekilde değiştirildi.", true)
+            const div1 = document.createElement('div');
+            div1.classList.add('divContent')
+            div1.innerText = "Telefonda cihazın bluetooth adı gözüküyor mu? Eski ismi ile gözükür."
+            document.getElementById('content').appendChild(div1)
+            const send = document.createElement('button');
+            send.classList.add('sendButton')
+            send.id = "send"
+            send.innerText = "Onayla"
+
+            send.addEventListener('click', () => {
+                const message = {
+                    "Command" : "WifiControl",
+                    "Data" : {}
+                }
+                wsClient.sendMessage(message)
+                send.remove()
+            });
+
+            document.getElementById('content').appendChild(send)
+        }
+    }
 }
 
 function addSaveSlaveCard_1(){
@@ -368,7 +403,7 @@ function setLedGreen(){
 function acceptGreenLed(){
     document.getElementById("send").remove()
     addDivContent("Yeşil led yandı.", true)
-    master_card_read()
+    addSaveSlaveCard_1()
 }
 
 function master_card_read(){
@@ -382,6 +417,8 @@ function master_card_read(){
     }
     wsClient.sendMessage(message)
 }
+
+
 
 const wsClient = new WebSocketClient('ws://100.95.162.23:80');
 
