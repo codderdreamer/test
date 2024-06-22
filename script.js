@@ -6,6 +6,13 @@ let WIFIMAC = null
 let ETHMAC = null
 let G4IMEI = null
 
+function updateContent(divContent){
+    const element = document.getElementById('content');
+    element.appendChild(divContent)
+    element.scrollTop = element.scrollHeight;
+    console.log(element.scrollTop)
+}
+
 class WebSocketClient {
     constructor(url) {
         this.url = url;
@@ -117,7 +124,7 @@ class WebSocketClient {
                         acceptRedLed()
                         setLedBlue()
                     });
-                    document.getElementById('content').appendChild(send)
+                    updateContent(send)
                 }
             }
             else if(command == "SlaveCard1"){
@@ -181,8 +188,7 @@ function addHeader(){
 
     headerDiv.appendChild(header)
     headerDiv.appendChild(connect)
-
-    document.getElementById('content').appendChild(headerDiv)
+    updateContent(headerDiv)
 }
 
 function addModel(){
@@ -196,7 +202,7 @@ function addModel(){
     modelInput.classList.add("modelInput")
     modelInput.id = "modelInput"
     model.appendChild(modelInput)
-    document.getElementById('content').appendChild(model)
+    updateContent(model)
 }
 
 function addChargePointId(){
@@ -210,7 +216,7 @@ function addChargePointId(){
     modelInput.classList.add("modelInput")
     modelInput.id = "chargePointIdInput"
     chargePointId.appendChild(modelInput)
-    document.getElementById('content').appendChild(chargePointId)
+    updateContent(chargePointId)
 }
 
 function addSerialNumber(){
@@ -224,21 +230,21 @@ function addSerialNumber(){
     serialNumberInput.classList.add("modelInput")
     serialNumberInput.id = "serialNumberInput"
     serialNumber.appendChild(serialNumberInput)
-    document.getElementById('content').appendChild(serialNumber)
+    updateContent(serialNumber)
 }
 
 function addBluetoothControl(){
     const div = document.createElement('div');
     div.classList.add('divContent')
     div.innerText = "Bluetooth adı değiştiriliyor..."
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
 }
 
 function addPlugCable(){
     const div = document.createElement('div');
     div.classList.add('divContent')
     div.innerText = "Max 6 Amper ile şarj başlatılacak, Lütfen kabloyu takınız."
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
     const message = {
         "Command" : "MaxCurrent6",
         "Data" : {}
@@ -256,7 +262,7 @@ function bluetooth(data){
             const div1 = document.createElement('div');
             div1.classList.add('divContent')
             div1.innerText = "Telefonda cihazın bluetooth adı gözüküyor mu? Eski ismi ile gözükür."
-            document.getElementById('content').appendChild(div1)
+            updateContent(div1)
             const send = document.createElement('button');
             send.classList.add('sendButton')
             send.id = "send"
@@ -271,7 +277,7 @@ function bluetooth(data){
                 send.remove()
             });
 
-            document.getElementById('content').appendChild(send)
+            updateContent(send)
         }
     }
 }
@@ -280,7 +286,7 @@ function addSaveSlaveCard_1(){
     const div = document.createElement('div');
     div.classList.add('divContent')
     div.innerText = "1. Slave kartı okutunuz."
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
     const message = {
         "Command" : "SaveSlaveCard1",
         "Data" : {}
@@ -292,7 +298,7 @@ function addSaveSlaveCard_2(){
     const div = document.createElement('div');
     div.classList.add('divContent')
     div.innerText = "2. Slave kartı okutunuz."
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
     const message = {
         "Command" : "SaveSlaveCard2",
         "Data" : {}
@@ -327,7 +333,7 @@ function send(){
             wsClient.sendMessage(message)
         }
     });
-    document.getElementById('content').appendChild(send)
+    updateContent(send)
 }
 
 function addDivContent(content,value){
@@ -354,7 +360,7 @@ function addDivContent(content,value){
         div.appendChild(image)
     }
     
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
 }
 
 function acceptRedLed(){
@@ -376,7 +382,7 @@ function setLedBlue(){
         acceptBlueLed()
         setLedGreen()
     });
-    document.getElementById('content').appendChild(send)
+    updateContent(send)
 }
 
 function acceptBlueLed(){
@@ -397,7 +403,7 @@ function setLedGreen(){
     send.addEventListener('click', () => {
         acceptGreenLed()
     });
-    document.getElementById('content').appendChild(send)
+    updateContent(send)
 }
 
 function acceptGreenLed(){
@@ -410,7 +416,7 @@ function master_card_read(){
     const div = document.createElement('div');
     div.classList.add('divContent')
     div.innerText = "Lütfen MASTER kartı cihaza okutunuz!"
-    document.getElementById('content').appendChild(div)
+    updateContent(div)
     const message = {
         "Command" : "saveMasterCard",
         "Data" : {}
